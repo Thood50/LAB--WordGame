@@ -14,6 +14,9 @@ namespace WordGame
             //ReadWordFile(path);
             AddWordToGame(path, "mouse");
             ReadWordFile(path);
+            Console.WriteLine("----------------");
+            CreateWordFile(path, DeleteWord(path, "kangoroo"));
+            ReadWordFile(path);
             Console.ReadLine();
         }
 
@@ -99,6 +102,79 @@ namespace WordGame
             catch (Exception e)
             {
                 Console.WriteLine(e.Message);
+            }
+        }
+
+        //Goal is to Delete A specific word from the gameFile if it excists, if not return gameFile to current state
+        static string[] DeleteWord(string location, string word)
+        {
+            //Lots of logic so have a generic try catch to catch anything so i can decide if it warrants a specific exception handler
+            try
+            {
+                //grabbing all current words from file
+                string[] words = File.ReadAllLines(location);
+                //I love booleans when checking for something specific
+                bool found = false;
+
+                //this for loops entire purpuse is to check for the word at question against the gameFile
+                for (int i = 0; i < words.Length; i++)
+                {    
+                    //if word is in gameFile toggle boolean to found
+                    if (word == words[i])
+                    {
+                        found = true;
+                    }
+                }
+                
+                //this block will only run IF WORD IS FOUND
+                if (found == true)
+                {
+                    //create newArray that is one shorter then current array
+                    string[] newWords = new string[words.Length - 1];
+                    //this for loop is looping over the gameFile array
+                    for (int i = 0; i < words.Length; i++)
+                    {
+                        //Utilizing a specific Exception for my logic since newArray is one shorter the intial array the last run in the loop will throw a Exception
+                        try
+                        {
+                            //will populate new array only if the word isnt the requested word to delete
+                            if (word != words[i])
+                            {
+                                //populates new array and throws the Exception on last loop if words dont match
+                                newWords[i] = words[i];
+                            }
+                        }
+                        //handles the very last run in the loop populating only if last item in intial array wasnt the requested word
+                        catch(IndexOutOfRangeException)
+                        {
+                            newWords[i-1] = words[i];
+                        }
+                        //just incase there is any Exceptions Im not anticapting will throw it to outer catch to be consoled
+                        catch(Exception)
+                        {
+                            throw;
+                        }
+                        
+                    }
+
+                    return newWords;
+                }
+                //returns intial gameFile in string[] form cause word was not found
+                else
+                {
+                    return words;
+                }
+
+
+
+
+            }
+            //catches any and all exceptions and alerts developer in console to be further explorered
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                string[] response = { "Error Occured" };
+                return response;
             }
         }
     }
