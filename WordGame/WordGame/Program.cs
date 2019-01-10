@@ -11,6 +11,8 @@ namespace WordGame
             string[] gameWords = { "cat", "dog", "kittie", "puppy", "turtle"};
             string path = "../../../wordFile.txt";
             CreateWordFile(path, gameWords);
+            //ReadWordFile(path);
+            AddWordToGame(path, "mouse");
             ReadWordFile(path);
             Console.ReadLine();
         }
@@ -66,6 +68,34 @@ namespace WordGame
 
             }
             //Console log Exception during development so I can decide if a specific catch is needed
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
+        }
+
+        //Add Word to end of file
+        static void AddWordToGame(string location, string newWord)
+        {
+            //To handle any Exceptions for the using block
+            try
+            {
+                //Handles the opening and closing of the gameFile
+                using (StreamWriter addWord = File.AppendText(location))
+                {
+                    //Catch any Exceptions to then throw outside of using block
+                    try
+                    {
+                        addWord.WriteLine(newWord);
+                    }
+                    //does the throwing
+                    catch (Exception)
+                    {
+                        throw;
+                    }
+                }
+            }
+            //Does the catching
             catch (Exception e)
             {
                 Console.WriteLine(e.Message);
