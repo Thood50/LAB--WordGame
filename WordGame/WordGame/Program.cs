@@ -8,20 +8,30 @@ namespace WordGame
     {
         static void Main(string[] args)
         {
-            string path = "../../../newFile.txt";
-            CreateTextFile(path);
+            string[] gameWords = { "cat", "dog", "kittie", "puppy", "turtle"};
+            string path = "../../../wordFile.txt";
+            CreateWordFile(path, gameWords);
         }
 
-        static void CreateTextFile(string location)
+        static void CreateWordFile(string location, string[] words)
         {
-            //Need a try catch to handle any possible Exceptions
             try
             {
                 //Putting streamwriter in a using block so that any files that are touched/opened get
                 // closed at the end of the block
                 using (StreamWriter createNewFile = new StreamWriter(location))
                 {
-                    createNewFile.WriteLine("Im writing in a new file");
+                    try
+                    {
+                        for (int i = 0; i < words.Length; i++)
+                        {
+                            createNewFile.WriteLine(words[i]);
+                        }
+                    }
+                    catch (Exception)
+                    {
+                        throw;
+                    }
                 }
             }
             catch (Exception e)
