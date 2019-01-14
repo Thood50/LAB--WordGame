@@ -181,12 +181,36 @@ namespace WordGame
             }
         }
 
+        //Generates random word from File
         static string RandomWord(string[] arr)
         {
             Random number = new Random();
             int i = number.Next(0, arr.Length);
             string newWord = arr[i];
             return newWord;
+        }
+
+        //takes previous guess and newguess and stores into array if incorrect
+        static string[] GuessedLetters(string[] oldguess, string newguess)
+        {
+            oldguess[oldguess.Length] = newguess;
+
+            return oldguess;
+        }
+
+        //Displays Guesses
+        static void DisplayGuessed(string[] guesses)
+        {
+            for (int i = 0; i < guesses.Length; i++)
+            {
+                Console.Write("Your guesses: ");
+                if(i == guesses.Length -1)
+                {
+                    Console.WriteLine($"{guesses[i]}.")
+                }
+                Console.Write($" {guesses[i]},");
+
+            }
         }
     }
 }
