@@ -11,13 +11,58 @@ namespace WordGame
             string[] gameWords = { "cat", "dog", "kittie", "puppy", "turtle" };
             string path = "../../../wordFile.txt";
             CreateWordFile(path, gameWords);
-            //ReadWordFile(path);
-            AddWordToGame(path, "mouse");
-            ReadWordFile(path);
-            Console.WriteLine("----------------");
-            CreateWordFile(path, DeleteWord(path, "kangoroo"));
-            ReadWordFile(path);
-            Console.ReadLine();
+            Interface(path);
+
+
+
+        }
+
+        static void Play(string path)
+        {
+            RandomWord(path);
+        }
+
+        static void Interface(string path)
+        {
+            Console.WriteLine("Welcome to word game");
+            Console.WriteLine("Please enter a commad");
+            Console.WriteLine("1. Play Game");
+            Console.WriteLine("2. View Words");
+            Console.WriteLine("3. Add word");
+            Console.WriteLine("4. Delete word");
+            Console.WriteLine("5. Exit");
+            string input = Console.ReadLine();
+
+            switch (Convert.ToInt32(input))
+            {
+                case 1:
+                    Play();
+                    break;
+
+                case 2:
+                    ReadWordFile(path);
+                    break;
+
+                case 3:
+                    Console.WriteLine("What word do you wish to add?");
+                    string newWord = Console.ReadLine();
+                    AddWordToGame(path, newWord);
+                    break;
+
+                case 4:
+                    Console.WriteLine("What word do you wish to delete?");
+                    string deleteWord = Console.ReadLine();
+                    DeleteWord(path, deleteWord);
+                    break;
+
+                case 5:
+                    Environment.Exit(1);
+                    break;
+
+                default:
+                    Interface(path);
+                    break;
+            }
         }
 
         //Create File, Populate File from array of words
@@ -82,26 +127,22 @@ namespace WordGame
 
         //Add Word to end of file
         static void AddWordToGame(string location, string newWord)
-        {
-            //To handle any Exceptions for the using block
+        {            
             try
-            {
-                //Handles the opening and closing of the gameFile
+            {                
                 using (StreamWriter addWord = File.AppendText(location))
-                {
-                    //Catch any Exceptions to then throw outside of using block
+                {                    
                     try
                     {
                         addWord.WriteLine(newWord);
                     }
-                    //does the throwing
+                    
                     catch (Exception)
                     {
                         throw;
                     }
                 }
-            }
-            //Does the catching
+            }            
             catch (Exception e)
             {
                 Console.WriteLine(e.Message);
@@ -190,6 +231,7 @@ namespace WordGame
             return newWord;
         }
 
+        //Displays the random word
         static void DisplayWord(string word, char[] guessed)
         {
             string theWord = word;
@@ -218,15 +260,15 @@ namespace WordGame
         }
 
         //Displays Guesses
-        static void DisplayGuessed(string[] guesses)
+        static void DisplayGuessed(char[] guesses)
         {
             for (int i = 0; i < guesses.Length; i++)
             {
                 Console.Write("Your guesses: ");
-                if(i == guesses.Length -1)
+                if(i == (guesses.Length - 1))
                 {
-                    Console.WriteLine($"{guesses[i]}.")
-                }
+                    Console.WriteLine($"{guesses[i]}.");
+                };
                 Console.Write($" {guesses[i]},");
 
             }
