@@ -190,8 +190,27 @@ namespace WordGame
             return newWord;
         }
 
+        static void DisplayWord(string word, char[] guessed)
+        {
+            string theWord = word;
+            char[] wordArray = theWord.ToCharArray();
+
+            for (int i = 0; i < wordArray.Length; i++)
+            {
+                for (int k = 0; k < guessed.Length; k++)
+                {
+                    if ( wordArray[i] == guessed[k])
+                    {
+                        Console.Write(wordArray[i]);
+                    }
+                }
+
+                Console.Write(" _");
+            }
+        }
+
         //takes previous guess and newguess and stores into array if incorrect
-        static string[] GuessedLetters(string[] oldguess, string newguess)
+        static char[] GuessedLetters(char[] oldguess, char newguess)
         {
             oldguess[oldguess.Length] = newguess;
 
