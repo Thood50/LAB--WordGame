@@ -8,7 +8,7 @@ namespace WordGame
     {
         static void Main(string[] args)
         {
-            string[] gameWords = { "cat", "dog", "kittie", "puppy", "turtle"};
+            string[] gameWords = { "cat", "dog", "kittie", "puppy", "turtle" };
             string path = "../../../wordFile.txt";
             CreateWordFile(path, gameWords);
             //ReadWordFile(path);
@@ -54,7 +54,7 @@ namespace WordGame
         }
 
         //Read File Lines, populate array from file, console all items in array
-        static void ReadWordFile(string location)
+        static string[] ReadWordFile(string location)
         {
             //Catch any Exceptions
             try
@@ -69,11 +69,14 @@ namespace WordGame
                     
                 }
 
+                return words;
             }
             //Console log Exception during development so I can decide if a specific catch is needed
             catch (Exception e)
             {
                 Console.WriteLine(e.Message);
+                string[] error = { "Error reading File" };
+                return error;
             }
         }
 
@@ -176,6 +179,14 @@ namespace WordGame
                 string[] response = { "Error Occured" };
                 return response;
             }
+        }
+
+        static string RandomWord(string[] arr)
+        {
+            Random number = new Random();
+            int i = number.Next(0, arr.Length);
+            string newWord = arr[i];
+            return newWord;
         }
     }
 }
