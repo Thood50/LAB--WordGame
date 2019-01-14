@@ -19,7 +19,33 @@ namespace WordGame
 
         static void Play(string path)
         {
-            RandomWord(path);
+            string[] words = File.ReadAllLines(path);
+            char[] guessedLetters = new char[0];
+            int guesses = 0;
+            string randomWord = RandomWord(words);
+            
+            while(guesses < 16 && CheckForWinner(guessedLetters, randomWord) == false)
+            {
+                DisplayWord(randomWord, guessedLetters);
+                Console.WriteLine($"You have {15 - guesses} guesses left");
+                Console.WriteLine($"You have guesses: ");
+                DisplayGuessed(guessedLetters);
+                Console.WriteLine($"Your next guess is?");
+                string guess = Console.ReadLine();
+                guesses++;
+            }
+
+            if (CheckForWinner(guessedLetters, randomWord) == true)
+            {
+                Console.WriteLine("Congrats you did it");
+                Interface(path);
+            }
+            if (CheckForWinner(guessedLetters, randomWord) == false)
+            {
+                Console.WriteLine("Sadly you didnt quite do it, try again!");
+                Interface(path);
+            }
+
         }
 
         static void Interface(string path)
@@ -36,7 +62,7 @@ namespace WordGame
             switch (Convert.ToInt32(input))
             {
                 case 1:
-                    Play();
+                    Play(path);
                     break;
 
                 case 2:
@@ -114,6 +140,7 @@ namespace WordGame
                     
                 }
 
+                Interface(location);
                 return words;
             }
             //Console log Exception during development so I can decide if a specific catch is needed
@@ -121,6 +148,7 @@ namespace WordGame
             {
                 Console.WriteLine(e.Message);
                 string[] error = { "Error reading File" };
+                Interface(location);
                 return error;
             }
         }
@@ -135,6 +163,7 @@ namespace WordGame
                     try
                     {
                         addWord.WriteLine(newWord);
+                        Interface(location);
                     }
                     
                     catch (Exception)
@@ -150,64 +179,65 @@ namespace WordGame
         }
 
         //Goal is to Delete A specific word from the gameFile if it excists, if not return gameFile to current state
-        static string[] DeleteWord(string location, string word)
+        static void DeleteWord(string location, string word)
         {
             //Lots of logic so have a generic try catch to catch anything so i can decide if it warrants a specific exception handler
             try
             {
-                //grabbing all current words from file
-                string[] words = File.ReadAllLines(location);
-                //I love booleans when checking for something specific
-                bool found = false;
-
-                //this for loops entire purpuse is to check for the word at question against the gameFile
-                for (int i = 0; i < words.Length; i++)
-                {    
-                    //if word is in gameFile toggle boolean to found
-                    if (word == words[i])
-                    {
-                        found = true;
-                    }
-                }
-                
-                //this block will only run IF WORD IS FOUND
-                if (found == true)
+                using (StreamWriter deleteWord = File.AppendText(location))
                 {
-                    //create newArray that is one shorter then current array
-                    string[] newWords = new string[words.Length - 1];
-                    //this for loop is looping over the gameFile array
+                    //grabbing all current words from file
+                    string[] words = File.ReadAllLines(location);
+                    //I love booleans when checking for something specific
+                    bool found = false;
+
+                    //this for loops entire purpuse is to check for the word at question against the gameFile
                     for (int i = 0; i < words.Length; i++)
                     {
-                        //Utilizing a specific Exception for my logic since newArray is one shorter the intial array the last run in the loop will throw a Exception
-                        try
+                        //if word is in gameFile toggle boolean to found
+                        if (word == words[i])
                         {
-                            //will populate new array only if the word isnt the requested word to delete
-                            if (word != words[i])
-                            {
-                                //populates new array and throws the Exception on last loop if words dont match
-                                newWords[i] = words[i];
-                            }
+                            found = true;
                         }
-                        //handles the very last run in the loop populating only if last item in intial array wasnt the requested word
-                        catch(IndexOutOfRangeException)
-                        {
-                            newWords[i-1] = words[i];
-                        }
-                        //just incase there is any Exceptions Im not anticapting will throw it to outer catch to be consoled
-                        catch(Exception)
-                        {
-                            throw;
-                        }
-                        
                     }
 
-                    return newWords;
+                    //this block will only run IF WORD IS FOUND
+                    if (found == true)
+                    {
+                        //create newArray that is one shorter then current array
+                        string[] newWords = new string[words.Length - 1];
+                        //this for loop is looping over the gameFile array
+                        for (int i = 0; i < words.Length; i++)
+                        {
+                            //Utilizing a specific Exception for my logic since newArray is one shorter the intial array the last run in the loop will throw a Exception
+                            try
+                            {
+                                //will populate new array only if the word isnt the requested word to delete
+                                if (word != words[i])
+                                {
+                                    //populates new array and throws the Exception on last loop if words dont match
+                                    newWords[i] = words[i];
+                                }
+                            }
+                            //handles the very last run in the loop populating only if last item in intial array wasnt the requested word
+                            catch (IndexOutOfRangeException)
+                            {
+                                newWords[i - 1] = words[i];
+                            }
+                            //just incase there is any Exceptions Im not anticapting will throw it to outer catch to be consoled
+                            catch (Exception)
+                            {
+                                throw;
+                            }
+
+                        }
+
+                        Interface(location);
+
+                    }
+                    //returns intial gameFile in string[] form cause word was not found
                 }
-                //returns intial gameFile in string[] form cause word was not found
-                else
-                {
-                    return words;
-                }
+
 
 
 
@@ -218,7 +248,7 @@ namespace WordGame
             {
                 Console.WriteLine(e.Message);
                 string[] response = { "Error Occured" };
-                return response;
+                
             }
         }
 
@@ -272,6 +302,35 @@ namespace WordGame
                 Console.Write($" {guesses[i]},");
 
             }
+        }
+
+        //Check for winner
+        static bool CheckForWinner(char[] guessed, string word)
+        {
+            string theWord = word;
+            char[] wordArray = theWord.ToCharArray();
+            int totalLetters = 0;
+
+            for (int i = 0; i < wordArray.Length; i++)
+            {
+                for (int k = 0; k < guessed.Length; k++)
+                {
+                    if (wordArray[i] == guessed[k])
+                    {
+                        if (totalLetters == wordArray.Length)
+                        {
+                            return true;
+                        }
+                        else
+                        {
+                            totalLetters++;
+                        }
+                    }
+                }
+
+                
+            }
+            return false;
         }
     }
 }
